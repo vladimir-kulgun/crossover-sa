@@ -1,0 +1,48 @@
+﻿@model PagedList.IPagedList<Journals.WebPortal.ViewModel.JournalViewModel>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
+
+@{
+    ViewBag.Title = "Journals";
+}
+
+<table class="table">
+    <thead>
+    <tr>
+        @using (Html.BeginForm())
+        {
+            <th>
+                @Html.TextBox("SearchString")
+            </th>
+            <th>
+                <input type="submit" value="Search" />
+            </th>
+        }
+        
+    </tr>
+    </thead>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @if (item.IsSubscribed)
+                {
+                    @Html.ActionLink("Unsubscribe", "Unsubscribe", new {id = item.Id, page = Model.PageNumber, ViewBag.searchString })
+                }
+                else
+                {
+                    @Html.ActionLink("Subscribe", "Subscribe", new {id = item.Id, page = Model.PageNumber, ViewBag.searchString })
+                }
+            </td>
+        </tr>
+    }
+
+</table>
+<br />
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("Index",
+    new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
